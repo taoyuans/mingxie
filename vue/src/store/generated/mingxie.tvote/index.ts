@@ -1,9 +1,10 @@
 import { Client, registry, MissingWalletError } from 'mingxie-client-ts'
 
 import { Params } from "mingxie-client-ts/mingxie.tvote/types"
+import { Voter } from "mingxie-client-ts/mingxie.tvote/types"
 
 
-export { Params };
+export { Params, Voter };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -38,6 +39,7 @@ const getDefaultState = () => {
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
+						Voter: getStructure(Voter.fromPartial({})),
 						
 		},
 		_Registry: registry,

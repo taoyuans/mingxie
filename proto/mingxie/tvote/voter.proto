@@ -1,0 +1,12 @@
+syntax = "proto3";
+package mingxie.tvote;
+
+option go_package = "mingxie/x/tvote/types";
+
+message Voter {
+  
+  string address = 1; 
+  string name = 2; 
+  uint64 age = 3; 
+  uint64 vid = 4; 
+}
