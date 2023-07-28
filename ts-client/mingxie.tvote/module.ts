@@ -7,10 +7,21 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
+import { MsgSaveVoter } from "./types/mingxie/tvote/tx";
 
 
-export {  };
+export { MsgSaveVoter };
 
+type sendMsgSaveVoterParams = {
+  value: MsgSaveVoter,
+  fee?: StdFee,
+  memo?: string
+};
+
+
+type msgSaveVoterParams = {
+  value: MsgSaveVoter,
+};
 
 
 export const registry = new Registry(msgTypes);
@@ -30,6 +41,28 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
+		async sendMsgSaveVoter({ value, fee, memo }: sendMsgSaveVoterParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgSaveVoter: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgSaveVoter({ value: MsgSaveVoter.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgSaveVoter: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		
+		msgSaveVoter({ value }: msgSaveVoterParams): EncodeObject {
+			try {
+				return { typeUrl: "/mingxie.tvote.MsgSaveVoter", value: MsgSaveVoter.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgSaveVoter: Could not create message: ' + e.message)
+			}
+		},
 		
 	}
 };

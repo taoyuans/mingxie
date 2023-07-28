@@ -70753,6 +70753,8 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  mingxie.tvote.MsgSaveVoterResponse:
+    type: object
   mingxie.tvote.Params:
     type: object
     description: Params defines the parameters for the module.

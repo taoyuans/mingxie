@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "mingxie/tvote/params.proto";
 // this line is used by starport scaffolding # 1
+import "mingxie/tvote/voter.proto";
 
 option go_package = "mingxie/x/tvote/types";
 
@@ -15,7 +16,17 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/mingxie/tvote/params";
   }
-  // this line is used by starport scaffolding # 2
+  // Queries a list of ShowVoter items.
+	rpc ShowVoter(QueryShowVoterRequest) returns (QueryShowVoterResponse) {
+		option (google.api.http).get = "/mingxie/tvote/show_voter/{vid}";
+	}
+
+// Queries a list of ListVoter items.
+	rpc ListVoter(QueryListVoterRequest) returns (QueryListVoterResponse) {
+		option (google.api.http).get = "/mingxie/tvote/list_voter";
+	}
+
+// this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -25,6 +36,23 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryShowVoterRequest {
+  uint64 vid = 1;
+}
+
+message QueryShowVoterResponse {
+  Voter voter = 1;
+}
+
+message QueryListVoterRequest {
+cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryListVoterResponse {
+  Voter voter = 1;
+cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

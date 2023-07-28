@@ -36,6 +36,8 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
+				ShowVoter: {},
+				ListVoter: {},
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
@@ -73,6 +75,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
+		},
+				getShowVoter: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.ShowVoter[JSON.stringify(params)] ?? {}
+		},
+				getListVoter: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.ListVoter[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -131,6 +145,80 @@ export default {
 		
 		
 		
+		
+		 		
+		
+		
+		async QueryShowVoter({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.MingxieTvote.query.queryShowVoter( key.vid)).data
+				
+					
+				commit('QUERY', { query: 'ShowVoter', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryShowVoter', payload: { options: { all }, params: {...key},query }})
+				return getters['getShowVoter']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryShowVoter API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryListVoter({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.MingxieTvote.query.queryListVoter(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.MingxieTvote.query.queryListVoter({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'ListVoter', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryListVoter', payload: { options: { all }, params: {...key},query }})
+				return getters['getListVoter']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryListVoter API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		async sendMsgSaveVoter({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.MingxieTvote.tx.sendMsgSaveVoter({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgSaveVoter:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgSaveVoter:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		
+		async MsgSaveVoter({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.MingxieTvote.tx.msgSaveVoter({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgSaveVoter:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgSaveVoter:Create Could not create message: ' + e.message)
+				}
+			}
+		},
 		
 	}
 }

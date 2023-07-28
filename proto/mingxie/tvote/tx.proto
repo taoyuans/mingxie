@@ -7,7 +7,19 @@ option go_package = "mingxie/x/tvote/types";
 
 // Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
+      rpc SaveVoter(MsgSaveVoter) returns (MsgSaveVoterResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgSaveVoter {
+  string creator = 1;
+  string address = 2;
+  string name = 3;
+  uint64 age = 4;
+  uint64 vid = 5;
+}
+
+message MsgSaveVoterResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
