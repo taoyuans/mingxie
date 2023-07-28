@@ -1,0 +1,14 @@
+syntax = "proto3";
+package mingxie.tvote;
+
+import "gogoproto/gogo.proto";
+import "mingxie/tvote/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "mingxie/x/tvote/types";
+
+// GenesisState defines the tvote module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

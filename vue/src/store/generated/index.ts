@@ -1,8 +1,10 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 
+import MingxieTvote from './mingxie.tvote'
 
 
 export default { 
+  MingxieTvote: load(MingxieTvote, 'mingxie.tvote'),
   
 }
 

@@ -1,0 +1,13 @@
+syntax = "proto3";
+package mingxie.tvote;
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "mingxie/x/tvote/types";
+
+// Msg defines the Msg service.
+service Msg {
+    // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+// this line is used by starport scaffolding # proto/tx/message
