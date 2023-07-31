@@ -9,10 +9,11 @@ export interface Voter {
   name: string;
   age: number;
   vid: number;
+  creator: string;
 }
 
 function createBaseVoter(): Voter {
-  return { address: "", name: "", age: 0, vid: 0 };
+  return { address: "", name: "", age: 0, vid: 0, creator: "" };
 }
 
 export const Voter = {
@@ -28,6 +29,9 @@ export const Voter = {
     }
     if (message.vid !== 0) {
       writer.uint32(32).uint64(message.vid);
+    }
+    if (message.creator !== "") {
+      writer.uint32(42).string(message.creator);
     }
     return writer;
   },
@@ -51,6 +55,9 @@ export const Voter = {
         case 4:
           message.vid = longToNumber(reader.uint64() as Long);
           break;
+        case 5:
+          message.creator = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -65,6 +72,7 @@ export const Voter = {
       name: isSet(object.name) ? String(object.name) : "",
       age: isSet(object.age) ? Number(object.age) : 0,
       vid: isSet(object.vid) ? Number(object.vid) : 0,
+      creator: isSet(object.creator) ? String(object.creator) : "",
     };
   },
 
@@ -74,6 +82,7 @@ export const Voter = {
     message.name !== undefined && (obj.name = message.name);
     message.age !== undefined && (obj.age = Math.round(message.age));
     message.vid !== undefined && (obj.vid = Math.round(message.vid));
+    message.creator !== undefined && (obj.creator = message.creator);
     return obj;
   },
 
@@ -83,6 +92,7 @@ export const Voter = {
     message.name = object.name ?? "";
     message.age = object.age ?? 0;
     message.vid = object.vid ?? 0;
+    message.creator = object.creator ?? "";
     return message;
   },
 };

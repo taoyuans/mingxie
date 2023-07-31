@@ -3,12 +3,13 @@ package cli
 import (
 	"strconv"
 
+	"mingxie/x/tvote/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
-	"mingxie/x/tvote/types"
 )
 
 var _ = strconv.Itoa(0)
@@ -20,11 +21,13 @@ func CmdSaveVoter() *cobra.Command {
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argAddress := args[0]
+
 			argName := args[1]
 			argAge, err := cast.ToUint64E(args[2])
 			if err != nil {
 				return err
 			}
+
 			argVid, err := cast.ToUint64E(args[3])
 			if err != nil {
 				return err
@@ -42,9 +45,11 @@ func CmdSaveVoter() *cobra.Command {
 				argAge,
 				argVid,
 			)
+
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}

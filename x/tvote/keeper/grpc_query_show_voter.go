@@ -3,10 +3,12 @@ package keeper
 import (
 	"context"
 
+	"mingxie/x/tvote/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"mingxie/x/tvote/types"
 )
 
 func (k Keeper) ShowVoter(goCtx context.Context, req *types.QueryShowVoterRequest) (*types.QueryShowVoterResponse, error) {
@@ -15,9 +17,10 @@ func (k Keeper) ShowVoter(goCtx context.Context, req *types.QueryShowVoterReques
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	voter, found := k.GetVoter(ctx, req.Vid)
+	if !found {
+		return nil, sdkerrors.ErrKeyNotFound
+	}
 
-	// TODO: Process the query
-	_ = ctx
-
-	return &types.QueryShowVoterResponse{}, nil
+	return &types.QueryShowVoterResponse{Voter: voter}, nil
 }

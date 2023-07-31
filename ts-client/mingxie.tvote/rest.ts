@@ -28,7 +28,7 @@ export type TvoteMsgSaveVoterResponse = object;
 export type TvoteParams = object;
 
 export interface TvoteQueryListVoterResponse {
-  voter?: TvoteVoter;
+  voter?: TvoteVoter[];
 
   /**
    * PageResponse is to be embedded in gRPC response messages where the
@@ -63,6 +63,7 @@ export interface TvoteVoter {
 
   /** @format uint64 */
   vid?: string;
+  creator?: string;
 }
 
 /**

@@ -30,7 +30,7 @@ export interface QueryListVoterRequest {
 }
 
 export interface QueryListVoterResponse {
-  voter: Voter | undefined;
+  voter: Voter[];
   pagination: PageResponse | undefined;
 }
 
@@ -267,13 +267,13 @@ export const QueryListVoterRequest = {
 };
 
 function createBaseQueryListVoterResponse(): QueryListVoterResponse {
-  return { voter: undefined, pagination: undefined };
+  return { voter: [], pagination: undefined };
 }
 
 export const QueryListVoterResponse = {
   encode(message: QueryListVoterResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.voter !== undefined) {
-      Voter.encode(message.voter, writer.uint32(10).fork()).ldelim();
+    for (const v of message.voter) {
+      Voter.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     if (message.pagination !== undefined) {
       PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
@@ -289,7 +289,7 @@ export const QueryListVoterResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.voter = Voter.decode(reader, reader.uint32());
+          message.voter.push(Voter.decode(reader, reader.uint32()));
           break;
         case 2:
           message.pagination = PageResponse.decode(reader, reader.uint32());
@@ -304,14 +304,18 @@ export const QueryListVoterResponse = {
 
   fromJSON(object: any): QueryListVoterResponse {
     return {
-      voter: isSet(object.voter) ? Voter.fromJSON(object.voter) : undefined,
+      voter: Array.isArray(object?.voter) ? object.voter.map((e: any) => Voter.fromJSON(e)) : [],
       pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
     };
   },
 
   toJSON(message: QueryListVoterResponse): unknown {
     const obj: any = {};
-    message.voter !== undefined && (obj.voter = message.voter ? Voter.toJSON(message.voter) : undefined);
+    if (message.voter) {
+      obj.voter = message.voter.map((e) => e ? Voter.toJSON(e) : undefined);
+    } else {
+      obj.voter = [];
+    }
     message.pagination !== undefined
       && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
     return obj;
@@ -319,7 +323,7 @@ export const QueryListVoterResponse = {
 
   fromPartial<I extends Exact<DeepPartial<QueryListVoterResponse>, I>>(object: I): QueryListVoterResponse {
     const message = createBaseQueryListVoterResponse();
-    message.voter = (object.voter !== undefined && object.voter !== null) ? Voter.fromPartial(object.voter) : undefined;
+    message.voter = object.voter?.map((e) => Voter.fromPartial(e)) || [];
     message.pagination = (object.pagination !== undefined && object.pagination !== null)
       ? PageResponse.fromPartial(object.pagination)
       : undefined;

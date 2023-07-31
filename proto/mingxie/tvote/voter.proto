@@ -9,4 +9,5 @@ message Voter {
   string name = 2; 
   uint64 age = 3; 
   uint64 vid = 4; 
+  string creator = 5;
 }

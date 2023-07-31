@@ -43,16 +43,16 @@ message QueryShowVoterRequest {
 }
 
 message QueryShowVoterResponse {
-  Voter voter = 1;
+  Voter voter = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryListVoterRequest {
-cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 message QueryListVoterResponse {
-  Voter voter = 1;
-cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  repeated Voter voter = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3
