@@ -20,12 +20,40 @@ export interface RpcStatus {
   details?: ProtobufAny[];
 }
 
+export type TvoteMsgSaveProposalDescResponse = object;
+
 export type TvoteMsgSaveVoterResponse = object;
 
 /**
  * Params defines the parameters for the module.
  */
 export type TvoteParams = object;
+
+export interface TvoteProposalDesc {
+  desc?: string;
+
+  /** @format uint64 */
+  vid?: string;
+
+  /** @format uint64 */
+  pid?: string;
+  creator?: string;
+}
+
+export interface TvoteQueryListProposalDescResponse {
+  proposalDesc?: TvoteProposalDesc[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
 
 export interface TvoteQueryListVoterResponse {
   voter?: TvoteVoter[];
@@ -263,6 +291,32 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryListProposalDesc
+   * @summary Queries a list of ListProposalDesc items.
+   * @request GET:/mingxie/tvote/list_proposal_desc
+   */
+  queryListProposalDesc = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<TvoteQueryListProposalDescResponse, RpcStatus>({
+      path: `/mingxie/tvote/list_proposal_desc`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
   /**
    * No description
    *

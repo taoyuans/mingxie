@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "mingxie/tvote/params.proto";
 // this line is used by starport scaffolding # 1
+import "mingxie/tvote/proposal_desc.proto";
 import "mingxie/tvote/voter.proto";
 
 option go_package = "mingxie/x/tvote/types";
@@ -24,6 +25,11 @@ service Query {
 // Queries a list of ListVoter items.
 	rpc ListVoter(QueryListVoterRequest) returns (QueryListVoterResponse) {
 		option (google.api.http).get = "/mingxie/tvote/list_voter";
+	}
+
+// Queries a list of ListProposalDesc items.
+	rpc ListProposalDesc(QueryListProposalDescRequest) returns (QueryListProposalDescResponse) {
+		option (google.api.http).get = "/mingxie/tvote/list_proposal_desc";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -52,6 +58,15 @@ message QueryListVoterRequest {
 
 message QueryListVoterResponse {
   repeated Voter voter = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryListProposalDescRequest {
+cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryListProposalDescResponse {
+  repeated ProposalDesc proposalDesc = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

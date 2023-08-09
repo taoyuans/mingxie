@@ -1,10 +1,11 @@
 import { Client, registry, MissingWalletError } from 'mingxie-client-ts'
 
 import { Params } from "mingxie-client-ts/mingxie.tvote/types"
+import { ProposalDesc } from "mingxie-client-ts/mingxie.tvote/types"
 import { Voter } from "mingxie-client-ts/mingxie.tvote/types"
 
 
-export { Params, Voter };
+export { Params, ProposalDesc, Voter };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -38,9 +39,11 @@ const getDefaultState = () => {
 				Params: {},
 				ShowVoter: {},
 				ListVoter: {},
+				ListProposalDesc: {},
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
+						ProposalDesc: getStructure(ProposalDesc.fromPartial({})),
 						Voter: getStructure(Voter.fromPartial({})),
 						
 		},
@@ -87,6 +90,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.ListVoter[JSON.stringify(params)] ?? {}
+		},
+				getListProposalDesc: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.ListProposalDesc[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -192,6 +201,32 @@ export default {
 		},
 		
 		
+		
+		
+		 		
+		
+		
+		async QueryListProposalDesc({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.MingxieTvote.query.queryListProposalDesc(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.MingxieTvote.query.queryListProposalDesc({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'ListProposalDesc', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryListProposalDesc', payload: { options: { all }, params: {...key},query }})
+				return getters['getListProposalDesc']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryListProposalDesc API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
 		async sendMsgSaveVoter({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -202,6 +237,19 @@ export default {
 					throw new Error('TxClient:MsgSaveVoter:Init Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new Error('TxClient:MsgSaveVoter:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgSaveProposalDesc({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.MingxieTvote.tx.sendMsgSaveProposalDesc({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgSaveProposalDesc:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgSaveProposalDesc:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -216,6 +264,19 @@ export default {
 					throw new Error('TxClient:MsgSaveVoter:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgSaveVoter:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgSaveProposalDesc({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.MingxieTvote.tx.msgSaveProposalDesc({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgSaveProposalDesc:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgSaveProposalDesc:Create Could not create message: ' + e.message)
 				}
 			}
 		},

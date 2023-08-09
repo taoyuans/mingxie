@@ -13,7 +13,8 @@ const (
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_tvote"
 
-	VoterKey = "Voter/values"
+	VoterKey        = "Voter/values"
+	ProposalDescKey = "ProposalDesc/values"
 )
 
 func KeyPrefix(p string) []byte {

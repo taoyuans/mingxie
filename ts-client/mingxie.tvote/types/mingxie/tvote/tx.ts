@@ -15,6 +15,16 @@ export interface MsgSaveVoter {
 export interface MsgSaveVoterResponse {
 }
 
+export interface MsgSaveProposalDesc {
+  creator: string;
+  pid: number;
+  vid: number;
+  desc: string;
+}
+
+export interface MsgSaveProposalDescResponse {
+}
+
 function createBaseMsgSaveVoter(): MsgSaveVoter {
   return { creator: "", address: "", name: "", age: 0, vid: 0 };
 }
@@ -139,10 +149,126 @@ export const MsgSaveVoterResponse = {
   },
 };
 
+function createBaseMsgSaveProposalDesc(): MsgSaveProposalDesc {
+  return { creator: "", pid: 0, vid: 0, desc: "" };
+}
+
+export const MsgSaveProposalDesc = {
+  encode(message: MsgSaveProposalDesc, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.pid !== 0) {
+      writer.uint32(16).uint64(message.pid);
+    }
+    if (message.vid !== 0) {
+      writer.uint32(24).uint64(message.vid);
+    }
+    if (message.desc !== "") {
+      writer.uint32(34).string(message.desc);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSaveProposalDesc {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSaveProposalDesc();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.pid = longToNumber(reader.uint64() as Long);
+          break;
+        case 3:
+          message.vid = longToNumber(reader.uint64() as Long);
+          break;
+        case 4:
+          message.desc = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgSaveProposalDesc {
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      pid: isSet(object.pid) ? Number(object.pid) : 0,
+      vid: isSet(object.vid) ? Number(object.vid) : 0,
+      desc: isSet(object.desc) ? String(object.desc) : "",
+    };
+  },
+
+  toJSON(message: MsgSaveProposalDesc): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.pid !== undefined && (obj.pid = Math.round(message.pid));
+    message.vid !== undefined && (obj.vid = Math.round(message.vid));
+    message.desc !== undefined && (obj.desc = message.desc);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgSaveProposalDesc>, I>>(object: I): MsgSaveProposalDesc {
+    const message = createBaseMsgSaveProposalDesc();
+    message.creator = object.creator ?? "";
+    message.pid = object.pid ?? 0;
+    message.vid = object.vid ?? 0;
+    message.desc = object.desc ?? "";
+    return message;
+  },
+};
+
+function createBaseMsgSaveProposalDescResponse(): MsgSaveProposalDescResponse {
+  return {};
+}
+
+export const MsgSaveProposalDescResponse = {
+  encode(_: MsgSaveProposalDescResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSaveProposalDescResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSaveProposalDescResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgSaveProposalDescResponse {
+    return {};
+  },
+
+  toJSON(_: MsgSaveProposalDescResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgSaveProposalDescResponse>, I>>(_: I): MsgSaveProposalDescResponse {
+    const message = createBaseMsgSaveProposalDescResponse();
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   SaveVoter(request: MsgSaveVoter): Promise<MsgSaveVoterResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  SaveProposalDesc(request: MsgSaveProposalDesc): Promise<MsgSaveProposalDescResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -150,11 +276,18 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.SaveVoter = this.SaveVoter.bind(this);
+    this.SaveProposalDesc = this.SaveProposalDesc.bind(this);
   }
   SaveVoter(request: MsgSaveVoter): Promise<MsgSaveVoterResponse> {
     const data = MsgSaveVoter.encode(request).finish();
     const promise = this.rpc.request("mingxie.tvote.Msg", "SaveVoter", data);
     return promise.then((data) => MsgSaveVoterResponse.decode(new _m0.Reader(data)));
+  }
+
+  SaveProposalDesc(request: MsgSaveProposalDesc): Promise<MsgSaveProposalDescResponse> {
+    const data = MsgSaveProposalDesc.encode(request).finish();
+    const promise = this.rpc.request("mingxie.tvote.Msg", "SaveProposalDesc", data);
+    return promise.then((data) => MsgSaveProposalDescResponse.decode(new _m0.Reader(data)));
   }
 }
 

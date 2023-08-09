@@ -7,10 +7,17 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
+import { MsgSaveProposalDesc } from "./types/mingxie/tvote/tx";
 import { MsgSaveVoter } from "./types/mingxie/tvote/tx";
 
 
-export { MsgSaveVoter };
+export { MsgSaveProposalDesc, MsgSaveVoter };
+
+type sendMsgSaveProposalDescParams = {
+  value: MsgSaveProposalDesc,
+  fee?: StdFee,
+  memo?: string
+};
 
 type sendMsgSaveVoterParams = {
   value: MsgSaveVoter,
@@ -18,6 +25,10 @@ type sendMsgSaveVoterParams = {
   memo?: string
 };
 
+
+type msgSaveProposalDescParams = {
+  value: MsgSaveProposalDesc,
+};
 
 type msgSaveVoterParams = {
   value: MsgSaveVoter,
@@ -41,6 +52,20 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
+		async sendMsgSaveProposalDesc({ value, fee, memo }: sendMsgSaveProposalDescParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgSaveProposalDesc: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgSaveProposalDesc({ value: MsgSaveProposalDesc.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgSaveProposalDesc: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
 		async sendMsgSaveVoter({ value, fee, memo }: sendMsgSaveVoterParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgSaveVoter: Unable to sign Tx. Signer is not present.')
@@ -55,6 +80,14 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+		
+		msgSaveProposalDesc({ value }: msgSaveProposalDescParams): EncodeObject {
+			try {
+				return { typeUrl: "/mingxie.tvote.MsgSaveProposalDesc", value: MsgSaveProposalDesc.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgSaveProposalDesc: Could not create message: ' + e.message)
+			}
+		},
 		
 		msgSaveVoter({ value }: msgSaveVoterParams): EncodeObject {
 			try {

@@ -1,0 +1,12 @@
+syntax = "proto3";
+package mingxie.tvote;
+
+option go_package = "mingxie/x/tvote/types";
+
+message ProposalDesc {
+  
+  string desc = 1; 
+  uint64 vid = 2; 
+  uint64 pid = 3; 
+  string creator = 4;
+}

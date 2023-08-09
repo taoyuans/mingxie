@@ -107,6 +107,7 @@ import (
 	tvotemodule "mingxie/x/tvote"
 	tvotemodulekeeper "mingxie/x/tvote/keeper"
 	tvotemoduletypes "mingxie/x/tvote/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	appparams "mingxie/app/params"
@@ -653,6 +654,10 @@ func New(
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
 
+	// // RegisterUpgradeHandlers is used for registering any on-chain upgrades.
+	// // Make sure it's called after `app.mm` and `app.configurator` are set.
+	// app.RegisterUpgradeHandlers()
+
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	app.sm = module.NewSimulationManager(
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
@@ -701,6 +706,10 @@ func New(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
+
+	// setupUpgradeHandlers should be called before `LoadLatestVersion()`
+	// because StoreLoad is sealed after that
+	app.setupUpgradeHandlers(app.configurator, app.TvoteKeeper)
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {

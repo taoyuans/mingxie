@@ -16,6 +16,8 @@ ignite chain serve
 sudo env GOOS=linux GOARCH=amd64 go build -o ./build/mingxied ./cmd/mingxied/main.go
 or
 go build -o ./build/mingxied ./cmd/mingxied/main.go
+
+go build -ldflags="-X github.com/cosmos/cosmos-sdk/version.Name=mingxie -X github.com/cosmos/cosmos-sdk/version.AppName=mingxied -X github.com/cosmos/cosmos-sdk/version.Version=v0.0.1"  -o ./build/mingxied ./cmd/mingxied/main.go
 ```
 
 ### Configure
